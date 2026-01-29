@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: mega-lavage-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mega-lavage-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true  # Render génère auto une clé forte
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: mega-lavage-redis
+          property: connectionString
+    healthCheckPath: /api/health
+
+  - type: redis
+    name: mega-lavage-redis
+    ipAllowList: []  # Vide = tout le monde (temporaire pour test)
+
+databases:
+  - name: mega-lavage-db
+    databaseName: megalavage_prod
+    user: megalavage_user
+    plan: free
